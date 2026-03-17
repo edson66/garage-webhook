@@ -1,0 +1,6 @@
+services:
+  garage-simulator:
+    image: cfontes0estapar/garage-sim:1.0.0
+    container_name: garage-sim
+    ports:
+      - "3000:3000"
