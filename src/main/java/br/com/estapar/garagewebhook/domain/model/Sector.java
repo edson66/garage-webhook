@@ -1,4 +1,4 @@
-package br.com.estapar.garagewebhook.model;
+package br.com.estapar.garagewebhook.domain.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
