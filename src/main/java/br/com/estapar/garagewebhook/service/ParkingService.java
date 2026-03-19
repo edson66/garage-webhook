@@ -58,6 +58,11 @@ public class ParkingService {
         ParkingSession session = sessionRepository.findByLicensePlateAndExitTimeIsNull(event.licensePlate())
                 .orElseThrow(() -> new EntityNotFoundException("Carro não encontrado ou já saiu: " + event.licensePlate()));
 
+        if (spot.getOccupied()){
+            System.out.println("ALERTA : A vaga enviada já estava ocupada!" +
+                    " Sobrescrevendo dados com novo carro... ");
+        }
+
         spot.setOccupied(true);
         session.setSpot(spot);
 
@@ -95,6 +100,7 @@ public class ParkingService {
 
         session.setExitTime(event.exitTime());
         session.setTotalPaid(totalPaid);
+
 
         var spot = session.getSpot();
         if (spot != null) {
