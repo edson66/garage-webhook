@@ -41,7 +41,7 @@ public class StartupSyncService implements CommandLineRunner {
 
                 List<Sector> sectors = response.sectors().stream().map(sec -> {
                     var sector = new Sector();
-                    sector.setName(sec.name());
+                    sector.setName(sec.name().toUpperCase());
                     sector.setBasePrice(sec.basePrice());
                     sector.setMaxCapacity(sec.maxCapacity());
                     sector.setOpenHour(sec.openHour());
