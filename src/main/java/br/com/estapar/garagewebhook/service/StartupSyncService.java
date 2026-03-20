@@ -8,6 +8,7 @@ import br.com.estapar.garagewebhook.repository.SectorRepository;
 import br.com.estapar.garagewebhook.repository.SpotRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -24,6 +25,9 @@ public class StartupSyncService implements CommandLineRunner {
 
     private final RestClient restClient;
 
+    @Value("${simulator.url:http://localhost:3000/garage}")
+    private String simulatorUrl;
+
     @Override
     @Transactional
     public void run(String... args) throws Exception {
@@ -33,7 +37,7 @@ public class StartupSyncService implements CommandLineRunner {
             parkingSessionRepository.deleteAll();
 
             GarageSyncDTO response = restClient.get()
-                    .uri("http://localhost:3000/garage")
+                    .uri(simulatorUrl)
                     .retrieve()
                     .body(GarageSyncDTO.class);
 

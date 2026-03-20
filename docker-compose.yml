@@ -29,3 +29,4 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/garage_webhook?createDatabaseIfNotExist=true&serverTimezone=UTC
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=admin
+      - SIMULATOR_URL=http://host.docker.internal:3000/garage
