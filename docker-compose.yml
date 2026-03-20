@@ -1,8 +1,31 @@
+version: '3.8'
+
 services:
-  garage-simulator:
+
+  mysql:
+    image: mysql:8.0
+    container_name: garage-mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: admin
+      MYSQL_DATABASE: garage_webhook
+    ports:
+      - "3306:3306"
+    restart: always
+
+  garage-sim:
     image: cfontes0estapar/garage-sim:1.0.0
     container_name: garage-sim
+    network_mode: "host"
+
+  api:
+    build: .
+    container_name: garage-api
     ports:
-      - "3000:3000"
-    extra_hosts:
-      - "localhost:host-gateway"
+      - "3003:3003"
+    depends_on:
+      - mysql
+      - garage-sim
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/garage_webhook?createDatabaseIfNotExist=true&serverTimezone=UTC
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=admin
