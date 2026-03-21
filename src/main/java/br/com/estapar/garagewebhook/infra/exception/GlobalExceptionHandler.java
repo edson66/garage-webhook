@@ -1,6 +1,7 @@
 package br.com.estapar.garagewebhook.infra.exception;
 
 import br.com.estapar.garagewebhook.domain.exception.GarageFullException;
+import br.com.estapar.garagewebhook.domain.exception.NotParkedException;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(GarageFullException.class)
     public ResponseEntity<String> garageFull(GarageFullException ex){
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
+
+    @ExceptionHandler(NotParkedException.class)
+    public ResponseEntity<String> notParked(NotParkedException ex){
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
 

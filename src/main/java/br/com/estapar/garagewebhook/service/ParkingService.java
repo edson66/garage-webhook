@@ -1,6 +1,7 @@
 package br.com.estapar.garagewebhook.service;
 
 import br.com.estapar.garagewebhook.domain.exception.GarageFullException;
+import br.com.estapar.garagewebhook.domain.exception.NotParkedException;
 import br.com.estapar.garagewebhook.domain.model.ParkingSession;
 import br.com.estapar.garagewebhook.domain.model.Sector;
 import br.com.estapar.garagewebhook.domain.model.Spot;
@@ -80,9 +81,30 @@ public class ParkingService {
         ParkingSession session = sessionRepository.findByLicensePlateAndExitTimeIsNull(event.licensePlate())
                 .orElseThrow(() -> new EntityNotFoundException("Carro não encontrado ou já saiu: " + event.licensePlate()));
 
+        var spot = session.getSpot();
+        if (spot == null){
+            throw new NotParkedException("Veículo ainda não estacionado!");
+        }
+
         long minutesParked = Duration.between(session.getEntryTime(), event.exitTime()).toMinutes();
 
-        BigDecimal totalPaid = BigDecimal.ZERO;
+        BigDecimal totalPaid = calculateTotalPaid(minutesParked,session);
+
+        session.setExitTime(event.exitTime());
+        session.setTotalPaid(totalPaid);
+
+        spot.setOccupied(false);
+        spotRepository.save(spot);
+
+        sessionRepository.save(session);
+
+        System.out.println("\nVeículo " + event.licensePlate() + " saiu. Tempo: " + minutesParked + " min. Valor pago: R$ " + totalPaid);
+
+        verifyDurationLimitMinutes(minutesParked,spot.getSector(), session.getLicensePlate());
+        verifyOperatingHours(session.getExitTime(),spot.getSector(), session.getLicensePlate());
+    }
+
+    private BigDecimal calculateTotalPaid(long minutesParked,ParkingSession session){
 
         if (minutesParked > 30){
 
@@ -94,27 +116,11 @@ public class ParkingService {
             BigDecimal decimalOccupancePercentage = session.getPriceModifierPercentage().divide(BigDecimal.valueOf(100));
             BigDecimal occupancePercentage = BigDecimal.ONE.add(decimalOccupancePercentage);
 
-            totalPaid = grossValue.multiply(occupancePercentage).setScale(2, RoundingMode.HALF_UP);
+            return grossValue.multiply(occupancePercentage).setScale(2, RoundingMode.HALF_UP);
 
         }
 
-        session.setExitTime(event.exitTime());
-        session.setTotalPaid(totalPaid);
-
-
-        var spot = session.getSpot();
-        if (spot != null) {
-            spot.setOccupied(false);
-            spotRepository.save(spot);
-        }
-
-        sessionRepository.save(session);
-
-        System.out.println("\nVeículo " + event.licensePlate() + " saiu. Tempo: " + minutesParked + " min. Valor pago: R$ " + totalPaid);
-
-        assert spot != null;
-        verifyDurationLimitMinutes(minutesParked,spot.getSector(), session.getLicensePlate());
-        verifyOperatingHours(session.getExitTime(),spot.getSector(), session.getLicensePlate());
+        return BigDecimal.ZERO;
     }
 
     private BigDecimal calculatePriceModifier(double occupance) {
