@@ -1,5 +1,6 @@
 package br.com.estapar.garagewebhook.infra.exception;
 
+import br.com.estapar.garagewebhook.domain.exception.ExitShouldBeAfterEntryException;
 import br.com.estapar.garagewebhook.domain.exception.GarageFullException;
 import br.com.estapar.garagewebhook.domain.exception.NotParkedException;
 import jakarta.persistence.EntityNotFoundException;
@@ -34,6 +35,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotParkedException.class)
     public ResponseEntity<String> notParked(NotParkedException ex){
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ExitShouldBeAfterEntryException.class)
+    public ResponseEntity<String> exitBeforeEntry(ExitShouldBeAfterEntryException ex){
         return ResponseEntity.badRequest().body(ex.getMessage());
     }
 

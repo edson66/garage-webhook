@@ -1,5 +1,6 @@
 package br.com.estapar.garagewebhook.service;
 
+import br.com.estapar.garagewebhook.domain.exception.ExitShouldBeAfterEntryException;
 import br.com.estapar.garagewebhook.domain.exception.GarageFullException;
 import br.com.estapar.garagewebhook.domain.exception.NotParkedException;
 import br.com.estapar.garagewebhook.domain.model.ParkingSession;
@@ -85,6 +86,9 @@ public class ParkingService {
         var spot = session.getSpot();
         if (spot == null){
             throw new NotParkedException("Veículo ainda não estacionado!");
+        }
+        if (session.getEntryTime().isAfter(event.exitTime())){
+            throw new ExitShouldBeAfterEntryException("O tempo de saída deve ser após a entrada");
         }
 
         long minutesParked = Duration.between(session.getEntryTime(), event.exitTime()).toMinutes();
