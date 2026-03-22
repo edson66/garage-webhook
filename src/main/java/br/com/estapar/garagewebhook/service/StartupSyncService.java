@@ -7,7 +7,7 @@ import br.com.estapar.garagewebhook.repository.ParkingSessionRepository;
 import br.com.estapar.garagewebhook.repository.SectorRepository;
 import br.com.estapar.garagewebhook.repository.SpotRepository;
 import jakarta.transaction.Transactional;
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Service;
@@ -16,6 +16,7 @@ import org.springframework.web.client.RestClient;
 import java.util.List;
 
 @Service
+@Slf4j
 public class StartupSyncService implements CommandLineRunner {
 
     private final SectorRepository sectorRepository;
@@ -39,7 +40,7 @@ public class StartupSyncService implements CommandLineRunner {
     @Override
     @Transactional
     public void run(String... args) throws Exception {
-        System.out.println("Iniciando sincronização com o Simulador...");
+        log.info("Iniciando sincronização com o simulador...");
 
         try {
             parkingSessionRepository.deleteAll();
@@ -81,13 +82,12 @@ public class StartupSyncService implements CommandLineRunner {
 
                 spotRepository.saveAll(spots);
 
-                System.out.println("Sincronização concluída! " + sectors.size() +
-                        " setores e " + spots.size() + " vagas carregadas no banco.");
+                log.info("Sincronização concluída! {} setores e {} vagas carregadas no banco",
+                        sectors.size(),spots.size());
             }
 
         }catch (Exception e){
-            System.err.println("Falha na sincronização. Certifique-se de que o Docker do simulador está rodando na porta 3000.");
-            System.err.println("Detalhe do erro: " + e.getMessage());
+            log.error("Falha na sincronização. Certifique-se de que o Docker do simulador está rodando em {}.",simulatorUrl, e);
         }
 
     }

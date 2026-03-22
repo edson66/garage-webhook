@@ -11,6 +11,7 @@ import br.com.estapar.garagewebhook.repository.SpotRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -21,6 +22,7 @@ import java.time.LocalTime;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ParkingService {
 
     private final SpotRepository spotRepository;
@@ -47,7 +49,7 @@ public class ParkingService {
 
         sessionRepository.save(session);
 
-        System.out.println("\nEntrada liberada para: " + event.licensePlate() + " | Modificador: " + priceModifier + "%");
+        log.info("Entrada liberada para: {} | Modificador: {}%",event.licensePlate(),priceModifier);
     }
 
     @Transactional
@@ -60,8 +62,7 @@ public class ParkingService {
                 .orElseThrow(() -> new EntityNotFoundException("Carro não encontrado ou já saiu: " + event.licensePlate()));
 
         if (spot.getOccupied()){
-            System.out.println("\nALERTA : A vaga enviada já estava ocupada!" +
-                    " Sobrescrevendo dados com novo carro... ");
+            log.warn("A vaga enviada já estava ocupada! Sobrescrevendo dados com novo carro...");
         }
 
         spot.setOccupied(true);
@@ -70,7 +71,7 @@ public class ParkingService {
         spotRepository.save(spot);
         sessionRepository.save(session);
 
-        System.out.println("\nVeículo " + event.licensePlate() + " estacionou no Setor " + spot.getSector().getName());
+        log.info("Veículo {} estacionou no Setor {}", event.licensePlate(), spot.getSector().getName());
 
         verifyOperatingHours(session.getEntryTime(), spot.getSector(), event.licensePlate());
     }
@@ -98,7 +99,7 @@ public class ParkingService {
 
         sessionRepository.save(session);
 
-        System.out.println("\nVeículo " + event.licensePlate() + " saiu. Tempo: " + minutesParked + " min. Valor pago: R$ " + totalPaid);
+        log.info("Veículo {} saiu. Tempo: {} min. Valor pago: R$ {}", event.licensePlate(),minutesParked, totalPaid);
 
         verifyDurationLimitMinutes(minutesParked,spot.getSector(), session.getLicensePlate());
         verifyOperatingHours(session.getExitTime(),spot.getSector(), session.getLicensePlate());
@@ -138,9 +139,8 @@ public class ParkingService {
     private void verifyDurationLimitMinutes(long minutesParked, Sector sector, String licensePlate){
 
         if (minutesParked > sector.getDurationLimitMinutes()){
-            System.out.println("\nALERTA : O carro " + licensePlate +
-                    " ficou " + minutesParked + " min e extrapolou o limite do setor " +
-                    sector.getName() + " (" + sector.getDurationLimitMinutes() + " min).");
+            log.warn("ALERTA : O carro {} ficou {} min e extrapolou o limite do setor {} ({} min).",
+                    licensePlate,minutesParked,sector.getName(),sector.getDurationLimitMinutes());
         }
 
     }
@@ -149,9 +149,8 @@ public class ParkingService {
         LocalTime time = actionTime.toLocalTime();
 
         if (time.isBefore(sector.getOpenHour()) || time.isAfter(sector.getCloseHour())) {
-            System.out.println("\nALERTA : O carro " + licensePlate +
-                    " movimentou-se fora do horário comercial do setor " + sector.getName() +
-                    " (Abre: " + sector.getOpenHour() + " | Fecha: " + sector.getCloseHour() + ").");
+            log.warn("ALERTA : O carro {} movimentou-se fora do horário comercial do setor {} (Abre: {} | Fecha {}).",
+                    licensePlate,sector.getName(),sector.getOpenHour(),sector.getCloseHour());
         }
     }
 }
