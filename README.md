@@ -15,6 +15,15 @@ Aplicação backend para gerenciamento de estacionamento em tempo real, com cál
 
 ---
 
+## Decisões de Arquitetura
+
+O projeto foi construído focando em código limpo, manutenção e separação de responsabilidades:
+- **Arquitetura em Camadas:** Divisão clara entre `controller`, `service`, `repository`, `model` e `dto`.
+- **Isolamento de Infraestrutura:** Detalhes técnicos (configurações, WebClients e tratamento de exceções) foram isolados em um pacote `infra`, mantendo o domínio da aplicação puro.
+- **Precisão Financeira:** Uso exclusivo de `BigDecimal` para o cálculo de tarifas e descontos, evitando erros de arredondamento de ponto flutuante.
+- **Global Exception Handler:** Centralização do tratamento de erros (`@RestControllerAdvice`) para retornar respostas JSON padronizadas e amigáveis em caso de falhas de validação ou regras de negócio.
+---
+
 ## Funcionalidades
 
 ### Sincronização automática
@@ -65,6 +74,12 @@ O projeto possui:
 - Testes de integração com banco real utilizando Testcontainers
 
 Isso garante maior confiabilidade e fidelidade ao ambiente de produção.
+
+Para rodar a suíte de testes localmente:
+
+```bash
+./mvnw test
+```
 
 ---
 
