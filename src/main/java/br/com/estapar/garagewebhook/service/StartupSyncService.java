@@ -87,7 +87,7 @@ public class StartupSyncService implements CommandLineRunner {
             }
 
         }catch (Exception e){
-            log.error("Falha na sincronização. Certifique-se de que o Docker do simulador está rodando em {}.",simulatorUrl, e);
+            log.error("Falha na sincronização. Certifique-se de que o Docker do simulador está rodando em {}.\nDetalhe: {}",simulatorUrl, e.getMessage());
         }
 
     }
