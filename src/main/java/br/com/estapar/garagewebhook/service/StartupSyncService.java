@@ -16,7 +16,6 @@ import org.springframework.web.client.RestClient;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class StartupSyncService implements CommandLineRunner {
 
     private final SectorRepository sectorRepository;
@@ -25,8 +24,17 @@ public class StartupSyncService implements CommandLineRunner {
 
     private final RestClient restClient;
 
-    @Value("${simulator.url:http://localhost:3000/garage}")
-    private String simulatorUrl;
+    private final String simulatorUrl;
+
+    public StartupSyncService(SectorRepository sectorRepository, SpotRepository spotRepository,
+                              ParkingSessionRepository parkingSessionRepository,
+                              RestClient restClient,@Value("${simulator.url:http://localhost:3000/garage}") String simulatorUrl) {
+        this.sectorRepository = sectorRepository;
+        this.spotRepository = spotRepository;
+        this.parkingSessionRepository = parkingSessionRepository;
+        this.restClient = restClient;
+        this.simulatorUrl = simulatorUrl;
+    }
 
     @Override
     @Transactional
