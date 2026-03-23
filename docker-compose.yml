@@ -18,15 +18,14 @@ services:
     network_mode: "host"
 
   api:
-    build: .
-    container_name: garage-api
-    ports:
-      - "3003:3003"
-    depends_on:
-      - mysql
-      - garage-sim
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/garage_webhook?createDatabaseIfNotExist=true&serverTimezone=UTC
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=admin
-      - SIMULATOR_URL=http://host.docker.internal:3000/garage
+      build: .
+      container_name: garage-api
+      network_mode: "host"
+      restart: on-failure
+      depends_on:
+        - mysql
+      environment:
+        - SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/garage_webhook?createDatabaseIfNotExist=true&serverTimezone=UTC
+        - SPRING_DATASOURCE_USERNAME=root
+        - SPRING_DATASOURCE_PASSWORD=admin
+        - SIMULATOR_URL=http://localhost:3000/garage
