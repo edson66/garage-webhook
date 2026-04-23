@@ -7,7 +7,7 @@ Aplicação backend para gerenciamento de estacionamento em tempo real, com cál
 ##  Tecnologias
 
 - Java 21
-- Spring Boot 3
+- Spring Boot 3.5.11
 - MySQL 8
 - Flyway
 - Spring RestClient
