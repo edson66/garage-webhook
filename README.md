@@ -98,15 +98,6 @@ Isso irá iniciar:
 
 A aplicação sobe automaticamente e começa a processar os eventos.
 
----
-
-### Parando a simulação para testes manuais
-
-Caso queira interromper o envio automático de eventos para testar o endpoint de receita (`GET /revenue`) ou validar o banco de dados com calma, você pode parar apenas o container do simulador:
-
-```bash
-docker stop garage-sim
-```
 
 ---
 
