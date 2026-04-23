@@ -12,11 +12,6 @@ services:
       - "3306:3306"
     restart: always
 
-  garage-sim:
-    image: cfontes0estapar/garage-sim:1.0.0
-    container_name: garage-sim
-    network_mode: "host"
-
   api:
       build: .
       container_name: garage-api
@@ -28,4 +23,3 @@ services:
         - SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/garage_webhook?createDatabaseIfNotExist=true&serverTimezone=UTC
         - SPRING_DATASOURCE_USERNAME=root
         - SPRING_DATASOURCE_PASSWORD=admin
-        - SIMULATOR_URL=http://localhost:3000/garage

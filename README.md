@@ -1,4 +1,4 @@
-# Estapar Garage Webhook API
+# Garage Webhook API
 
 Aplicação backend para gerenciamento de estacionamento em tempo real, com cálculo de receita, controle de ocupação e processamento de eventos via webhook.
 
@@ -30,7 +30,7 @@ O projeto foi construído focando em código limpo, manutenção e separação d
 
 Ao iniciar, a aplicação:
 
-- Consome `GET /garage` do simulador
+- Consome `GET /garage` de um ou request manuais simulador
 - Limpa dados transacionais (sessões)
 - Realiza **upsert** de setores e vagas
 
@@ -94,10 +94,9 @@ docker-compose up -d
 Isso irá iniciar:
 
 - MySQL
-- Simulador
 - API (porta 3003)
 
-A aplicação já sobe automaticamente e começa a processar os eventos do simulador.
+A aplicação sobe automaticamente e começa a processar os eventos.
 
 ---
 
